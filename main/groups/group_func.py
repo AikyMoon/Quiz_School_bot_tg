@@ -102,15 +102,19 @@ def check_users_count(group_id: int) -> int:
 # ------------------ получение списка заявок            ------------------
 def get_users_from_requests(group_id: int) -> str:
     cur.execute(f"select requests from groups where group_id = {group_id}")
-    users = [i for i in cur.fetchone() if i]
-    text = "Список всех заявок:\n"
+    res = cur.fetchone()[0]
+    if res:
+        users = [i for i in res if i]
+        text = "Список всех заявок:\n"
 
-    for user in users:
-        cur.execute(f"select first_name, last_name from users where id = {user}")
-        data = cur.fetchone()
-        text += f"id: {user} - {data[0]} {data[1]}\n"
+        for user in users:
+            cur.execute(f"select first_name, last_name from users where id = {user}")
+            data = cur.fetchone()
+            text += f"id: {user} - {data[0]} {data[1]}\n"
 
-    return text.strip()
+        return text.strip()
+    else:
+        return "Заявок нет"
 
 
 # ------------------подтверждение запроса на вступление ------------------
