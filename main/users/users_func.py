@@ -2,6 +2,7 @@ from main.db_connect import *
 from main.config import COMMANDS
 from main.groups import check_group
 
+
 # ------------------ проверка роли                ------------------
 def check_role(user_id: int) -> bool:
     cur.execute(f"SELECT is_player FROM users WHERE id = {user_id}")

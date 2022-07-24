@@ -227,3 +227,11 @@ def send_warnings(group_id: int) -> list[int]:
 def delete_group(group_id: int):
     cur.execute(f"delete from groups where group_id = {group_id}")
     con.commit()
+
+
+# ------------------ есть ли такой id группы                  ------------------
+def check_group_id(group_id: int) -> bool:
+    cur.execute(f"select group_id from groups where group_id = {group_id}")
+    if cur.fetchone():
+        return True
+    return False

@@ -164,21 +164,25 @@ async def entry(message: types.Message):
                 await bot.send_message(u_id, "Напишите /entry и через пробел id команды")
             else:
                 _, group_id = message.text.split()
-                if check_wait(u_id):
-                    await bot.send_message(u_id, "Ожидайте подтверждения запроса от группы")
-                else:
-                    if check_users_count(group_id) < 4:
-                        new_group_requests(group_id, u_id)
-                        set_wait_true(u_id)
-                        await bot.send_message(u_id, "Заявка отправлена, ожидайте подтверждения")
 
-                        capitan = get_capitan(group_id)
-                        await bot.send_message(capitan, f"id: {u_id}\n"
-                                                        f"Имя: {get_uname(u_id)}\n"
-                                                        f"Хочет вступить в вашу группу", )
-
+                if check_group_id(group_id):
+                    if check_wait(u_id):
+                        await bot.send_message(u_id, "Ожидайте подтверждения запроса от группы")
                     else:
-                        await bot.send_message(u_id, "Количество участников достигло лимита")
+                        if check_users_count(group_id) < 4:
+                            new_group_requests(group_id, u_id)
+                            set_wait_true(u_id)
+                            await bot.send_message(u_id, "Заявка отправлена, ожидайте подтверждения")
+
+                            capitan = get_capitan(group_id)
+                            await bot.send_message(capitan, f"id: {u_id}\n"
+                                                            f"Имя: {get_uname(u_id)}\n"
+                                                            f"Хочет вступить в вашу группу", )
+
+                        else:
+                            await bot.send_message(u_id, "Количество участников достигло лимита")
+                else:
+                    await bot.send_message(u_id, "Убедитесь в правильности написания id группы")
     else:
         await bot.send_message(u_id, "Команду могут использовать только игроки")
 
@@ -199,20 +203,24 @@ async def agree_request(message: types.Message):
                 await bot.send_message(u_id, "Напишите /ok и через пробел id участника")
             else:
                 _, new_u_id = message.text.split()
-                add_user_group(group_id, new_u_id)
 
-                user = get_uname(new_u_id)
-                group_name = get_group_name(group_id)
+                if check_id(new_u_id):
+                    add_user_group(group_id, new_u_id)
 
-                await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
-                await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+                    user = get_uname(new_u_id)
+                    group_name = get_group_name(group_id)
 
-                set_wait_false(new_u_id)
-                cur.execute(f"select requests from groups where group_id = {group_id}")
-                data = list(cur.fetchone()[0])
-                data.remove(int(new_u_id))
-                cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
-                con.commit()
+                    await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
+                    await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+
+                    set_wait_false(new_u_id)
+                    cur.execute(f"select requests from groups where group_id = {group_id}")
+                    data = list(cur.fetchone()[0])
+                    data.remove(int(new_u_id))
+                    cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                    con.commit()
+                else:
+                    await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
 
 
 # ------------------отклонение запроса на вступление     ------------------
@@ -230,16 +238,19 @@ async def disagree_request(message: types.Message):
         else:
             _, new_u_id = message.text.split()
 
-            cur.execute(f"select requests from groups where group_id = {group_id}")
-            data = list(cur.fetchone()[0])
-            data.remove(int(new_u_id))
-            cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
-            con.commit()
+            if check_id(new_u_id):
+                cur.execute(f"select requests from groups where group_id = {group_id}")
+                data = list(cur.fetchone()[0])
+                data.remove(int(new_u_id))
+                cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                con.commit()
 
-            await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
-            set_wait_false(new_u_id)
-            name = get_uname(new_u_id)
-            await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
+                await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
+                set_wait_false(new_u_id)
+                name = get_uname(new_u_id)
+                await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
+            else:
+                await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
 
 
 # ------------------выгон участника из группы            ------------------
@@ -254,22 +265,26 @@ async def kick_user(message: types.Message):
             await bot.send_message(u_id, "Напишите /kick и через пробел id участнкиа")
         else:
             _, target_u_id = message.text.split()
-            group_id = get_group_id(u_id)
 
-            cur.execute(f"select group_users_id from groups where group_id = {group_id}")
-            data = list(cur.fetchone()[0])
-            data.remove(int(target_u_id))
+            if check_id(target_u_id):
+                group_id = get_group_id(u_id)
 
-            cur.execute(f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
-            con.commit()
+                cur.execute(f"select group_users_id from groups where group_id = {group_id}")
+                data = list(cur.fetchone()[0])
+                data.remove(int(target_u_id))
 
-            cur.execute(f"update users set group_id = null where id = {target_u_id}")
-            con.commit()
+                cur.execute(f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
+                con.commit()
 
-            name = get_uname(target_u_id)
+                cur.execute(f"update users set group_id = null where id = {target_u_id}")
+                con.commit()
 
-            await bot.send_message(u_id, f"{name} был выгнан из группы")
-            await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
+                name = get_uname(target_u_id)
+
+                await bot.send_message(u_id, f"{name} был выгнан из группы")
+                await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
+            else:
+                await bot.send_message(u_id, "Убедитесь в правильности написания id участника")
 
 
 # ------------------вывод текста задачи            ------------------
@@ -282,33 +297,37 @@ async def print_task(message: types.Message):
         else:
             _, task_id = message.text.split()
 
-            if check_task_type(int(task_id)):
+            if check_task_id(task_id):
 
-                if check_role(u_id):
-                    await bot.send_message(u_id, "Решать такие задачи может только капитан")
-                else:
-                    if check_task(u_id) != 0:
-                        await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
-                                                     f"ищите условие выше")
+                if check_task_type(int(task_id)):
+
+                    if check_role(u_id):
+                        await bot.send_message(u_id, "Решать такие задачи может только капитан")
                     else:
-
-                        group_id = get_group_id(u_id)
-                        if check_group_task(task_id, group_id):
-                            await bot.send_message(u_id, "Вы уже решали эту задачу")
+                        if check_task(u_id) != 0:
+                            await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
+                                                         f"ищите условие выше")
                         else:
-                            if check_task_act_counts(task_id):
-                                task_text, task_manual = get_task(int(task_id))
-                                task_bind(task_id, u_id)
-                                if task_manual != "nan":
-                                    await bot.send_message(u_id, "Текст задачи: \n" + task_text)
-                                    await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
-                                else:
-                                    await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+
+                            group_id = get_group_id(u_id)
+                            if check_group_task(task_id, group_id):
+                                await bot.send_message(u_id, "Вы уже решали эту задачу")
                             else:
-                                await bot.send_message(u_id, "Эту задачу уже нельзя решить")
+                                if check_task_act_counts(task_id):
+                                    task_text, task_manual = get_task(int(task_id))
+                                    task_bind(task_id, u_id)
+                                    if task_manual != "nan":
+                                        await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                                        await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
+                                    else:
+                                        await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                                else:
+                                    await bot.send_message(u_id, "Эту задачу уже нельзя решить")
+                else:
+                    points = without_answer(u_id, task_id)
+                    await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
             else:
-                points = without_answer(u_id, task_id)
-                await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+                await bot.send_message(u_id, "Убедитесь в правильности написания id задачи")
     else:
         await bot.send_message(u_id, "Команду могут использовать игроки или капитаны команд")
 

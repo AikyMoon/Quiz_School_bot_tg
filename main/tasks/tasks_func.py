@@ -46,3 +46,11 @@ def check_task_type(task_id: int) -> bool:
     if cur.fetchone()[0] == "nan":
         return False
     return True
+
+
+# ------------------ есть ли такой id задачи                 ------------------
+def check_task_id(task_id: int) -> bool:
+    cur.execute(f"select task_id from questions where task_id = {task_id}")
+    if cur.fetchone():
+        return True
+    return False
