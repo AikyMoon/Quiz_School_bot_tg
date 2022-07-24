@@ -184,18 +184,22 @@ def get_capitan(group_id: int) -> int:
 
 
 # ------------------ отвязка группы                         ------------------
-def unbind_group(u_id: int, group_id: int):
+def unbind_group(user_id: int, group_id: int):
     cur.execute(f"select group_users_id from groups where group_id = {group_id}")
     res = cur.fetchone()[0]
     if res:
         data = [i for i in res if i]
-        data.remove(u_id)
+        data.remove(user_id)
     else:
         data = []
+
     cur.execute(f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
     con.commit()
 
-    cur.execute(f"update users set group_id = null and is_player = true where id = {u_id}")
+    cur.execute(f"update users set group_id = null where id = {user_id}")
+    con.commit()
+
+    cur.execute(f"update users set is_player = true where id = {user_id}")
     con.commit()
 
 
