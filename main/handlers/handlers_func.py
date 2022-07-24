@@ -166,7 +166,9 @@ async def entry(message: types.Message):
                         await bot.send_message(u_id, "Заявка отправлена, ожидайте подтверждения")
 
                         capitan = get_capitan(group_id)
-                        await bot.send_message(capitan, f"id: {u_id} {get_uname(u_id)} хочет вступить в вашу группу")
+                        await bot.send_message(capitan, f"id: {u_id}\n"
+                                                        f"Имя: {get_uname(u_id)}\n"
+                                                        f"хочет вступить в вашу группу")
 
                     else:
                         await bot.send_message(u_id, "Количество участников достигло лимита")
