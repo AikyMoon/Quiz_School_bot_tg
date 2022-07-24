@@ -142,7 +142,7 @@ def add_ready_group_tasks(task_id: int, group_id: int):
     cur.execute(f"select ready_qs_id from groups where group_id = {group_id}")
     res = cur.fetchone()[0]
     if res:
-        data = [i for i in cur.fetchone()[0] if i]
+        data = [i for i in res if i]
         data.append(task_id)
     else:
         data = [task_id]
@@ -181,3 +181,45 @@ def get_task_count(group_id: int) -> int:
 def get_capitan(group_id: int) -> int:
     cur.execute(f"select id from users where group_id = {group_id} and is_player = false")
     return cur.fetchone()[0]
+
+
+# ------------------ отвязка группы                         ------------------
+def unbind_group(u_id: int, group_id: int):
+    cur.execute(f"select group_users_id from groups where group_id = {group_id}")
+    res = cur.fetchone()[0]
+    if res:
+        data = [i for i in res if i]
+        data.remove(u_id)
+    else:
+        data = []
+    cur.execute(f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
+    con.commit()
+
+    cur.execute(f"update users set group_id = null and is_player = true where id = {u_id}")
+    con.commit()
+
+
+# ------------------ получение списка заявок                  ------------------
+def disagree_requests(group_id: int) -> list[int]:
+    cur.execute(f"select requests from groups where group_id = {group_id}")
+    res = cur.fetchone()[0]
+    if res:
+        data = [i for i in res if i]
+        return data
+    return []
+
+
+# ------------------ получение списка пользователей в группе   ------------------
+def send_warnings(group_id: int) -> list[int]:
+    cur.execute(f"select group_users_id from groups where group_id = {group_id}")
+    res = cur.fetchone()[0]
+    if res:
+        data = [i for i in res if i]
+        return data
+    return []
+
+
+# ------------------ удаление группы из бд                    ------------------
+def delete_group(group_id: int):
+    cur.execute(f"delete from groups where group_id = {group_id}")
+    con.commit()

@@ -5,6 +5,7 @@ from main.tasks import *
 from main.config import *
 from aiogram import types
 
+
 # ------------------ уникальные задачи                  ------------------
 def without_answer(user_id: int, task_id: int) -> int:
     group_id = get_group_id(user_id)
@@ -13,6 +14,7 @@ def without_answer(user_id: int, task_id: int) -> int:
     activation_decriment(task_id)
     add_ready_group_tasks(task_id, group_id)
     return points
+
 
 # ------------------ начало общения                     ------------------
 @dp.message_handler(commands=["start"])
@@ -58,7 +60,8 @@ async def print_help(message: types.Message):
                        "/statistics - вывод статистики команды\n" \
                        "/admin - выводит контакт для связи с админом\n" \
                        "/task <task_id> - вывод задачи\n" \
-                       "/profile - ваш профиль"
+                       "/profile - ваш профиль\n" \
+                       "/leave - покинуть группу"
             else:
                 text = "Список доступных команд\n" \
                        "/statistics - вывод статистики команды\n" \
@@ -71,7 +74,8 @@ async def print_help(message: types.Message):
                        "/answer <answer> - ответ к задаче, отвечать могут только капитаны\n" \
                        "/exit - уйти с решения текущей задачи\n" \
                        "/admin - выводит контакт для связи с админом\n" \
-                       "/profile - ваш профиль"
+                       "/profile - ваш профиль\n" \
+                       "/leave - покинуть группу"
         else:
             text = "Список доступных команд:\n" \
                    f"/create <group_name> - создание команды (не более {MAX_GROUP_USERS}-ти человек)\n" \
@@ -171,7 +175,7 @@ async def entry(message: types.Message):
                         capitan = get_capitan(group_id)
                         await bot.send_message(capitan, f"id: {u_id}\n"
                                                         f"Имя: {get_uname(u_id)}\n"
-                                                        f"хочет вступить в вашу группу")
+                                                        f"Хочет вступить в вашу группу", )
 
                     else:
                         await bot.send_message(u_id, "Количество участников достигло лимита")
@@ -418,3 +422,30 @@ async def user_profile(message: types.Message):
 
     else:
         await bot.send_message(u_id, "Команду могут использовать только зарегестрированные пользователи")
+
+
+# ------------------ покидание группы игроком          ------------------
+@dp.message_handler(commands=["leave"])
+async def leave_group(message: types.Message):
+    u_id = message.chat.id
+
+    if can_use(u_id, "/leave"):
+
+        group_id = get_group_id(u_id)
+        if check_role(u_id):
+            unbind_group(u_id, group_id)
+            await bot.send_message("Вы успешно покинули группу")
+        else:
+
+            for user in disagree_requests(group_id):
+                await bot.send_message(user, "Заявка отклонена, т.к. группа была удалена")
+
+            for cur_user in send_warnings(group_id):
+                unbind_group(cur_user, group_id)
+                await bot.send_message(cur_user, "Группа была удалена")
+
+            delete_group(group_id)
+
+            await bot.send_message(u_id, "Группа была успешно удалена")
+    else:
+        await bot.send_message(u_id, "Команду могут использовать участники или капитаны групп")
