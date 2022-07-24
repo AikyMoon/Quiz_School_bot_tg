@@ -33,15 +33,16 @@ async def register(message: types.Message):
     if check_id(u_id):
         await bot.send_message(u_id, f"Вы уже зарегестрированны по именем {get_uname(u_id)}")
     else:
-        if len(message.text.split()) != 3:
+        if len(message.text.split()) < 3:
             await bot.send_message(u_id, "Введите /reg и через пробел имя и фамилию до 255 символов")
-        _, first_name, last_name = message.text.split()
-
-        if len(first_name) > 255 or len(last_name) > 255:
-            await bot.send_message(u_id, "Имя и фамилия должны быть не больше 255 символов")
         else:
-            set_name(u_id, first_name, last_name)
-            await bot.send_message(u_id, "Регистрация прошла успешно")
+            _, first_name, last_name = message.text.split()
+
+            if len(first_name) > 255 or len(last_name) > 255:
+                await bot.send_message(u_id, "Имя и фамилия должны быть не больше 255 символов")
+            else:
+                set_name(u_id, first_name, last_name)
+                await bot.send_message(u_id, "Регистрация прошла успешно")
 
 
 # ------------------ вывод списка доступных команд    ------------------
