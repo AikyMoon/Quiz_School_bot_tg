@@ -71,10 +71,10 @@ def unbind_task(user_id):
 def can_use(user_id: int, command: str) -> bool:
     if check_id(user_id):
         if check_group(user_id):
-            if not check_role(user_id):
-                return command in COMMANDS["master"]
-            else:
+            if check_role(user_id):
                 return command in COMMANDS["player"]
+            else:
+                return command in COMMANDS["master"]
         else:
             return command in COMMANDS["without_group"]
     else:

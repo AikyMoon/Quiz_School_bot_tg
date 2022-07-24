@@ -181,7 +181,7 @@ async def entry(message: types.Message):
 async def agree_request(message: types.Message):
     u_id = message.chat.id
 
-    if can_use(u_id, "/ok"):
+    if not can_use(u_id, "/ok"):
         await bot.send_message(u_id, "Команду может использовать только капитан")
     else:
         group_id = get_group_id(u_id)
@@ -214,7 +214,7 @@ async def agree_request(message: types.Message):
 async def disagree_request(message: types.Message):
     u_id = message.chat.id
 
-    if can_use(u_id, "/no"):
+    if not can_use(u_id, "/no"):
         await bot.send_message(u_id, "Команду может использовать только капитан")
     else:
         group_id = get_group_id(u_id)
@@ -240,7 +240,7 @@ async def disagree_request(message: types.Message):
 async def kick_user(message: types.Message):
     u_id = message.chat.id
 
-    if can_use(u_id, "/kick"):
+    if not can_use(u_id, "/kick"):
         await bot.send_message(u_id, "Команду может использовать только капитан")
     else:
         if len(message.text.split()) != 2:
