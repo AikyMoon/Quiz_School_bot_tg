@@ -18,6 +18,7 @@ def without_answer(user_id: int, task_id: int) -> int:
 @dp.message_handler(commands=["start"])
 async def starting(message: types.Message):
     u_id = message.chat.id
+    cur.execute("rollback")
     if check_id(u_id):
         username = get_uname(u_id)
         await bot.send_message(u_id, f"Приветствуем, {username}, чтобы вывести список доступных команд, напишите /help")
