@@ -127,7 +127,7 @@ async def print_settings(message: types.Message):
     if can_use(u_id, "/group_info"):
         group_id = get_group_id(u_id)
         users_count = get_users_count(group_id)
-        text = f"Настройки группы:\n" \
+        text = f"Информация о группе:\n" \
                f"id группы: {group_id}\n" \
                f"Количество пользователей {users_count} из {MAX_GROUP_USERS}"
 
