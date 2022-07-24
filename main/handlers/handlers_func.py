@@ -2,7 +2,7 @@ from main.create_bot import *
 from main.users import *
 from main.groups import *
 from main.tasks import *
-
+from main.config import *
 from aiogram import types
 
 # ------------------ уникальные задачи                  ------------------
@@ -18,7 +18,6 @@ def without_answer(user_id: int, task_id: int) -> int:
 @dp.message_handler(commands=["start"])
 async def starting(message: types.Message):
     u_id = message.chat.id
-    cur.execute("rollback")
     if check_id(u_id):
         username = get_uname(u_id)
         await bot.send_message(u_id, f"Приветствуем, {username}, чтобы вывести список доступных команд, напишите /help")
