@@ -155,7 +155,7 @@ def check_group_task(task_id: str, group_id: int) -> bool:
     cur.execute(f"select ready_qs_id from groups where group_id = {group_id}")
     res = cur.fetchone()[0]
     if res:
-        data = [i for i in cur.fetchone()[0] if i]
+        data = [i for i in res if i]
         return int(task_id) in data
     else:
         return False
