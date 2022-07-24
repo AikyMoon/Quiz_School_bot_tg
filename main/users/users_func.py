@@ -10,7 +10,7 @@ def check_role(user_id: int) -> bool:
 
 # ------------------ есть ли уже такой пользователь      ------------------
 def check_id(user_id: int) -> bool:
-    cur.execute(f"SELECT * FROM users WHERE id = {user_id}")
+    cur.execute(f"SELECT id FROM users WHERE id = {user_id}")
     if not cur.fetchone():
         return False
     return True
@@ -79,3 +79,9 @@ def can_use(user_id: int, command: str) -> bool:
             return command in COMMANDS["without_group"]
     else:
         return command in COMMANDS["non_register"]
+
+
+# ------------------ ожидание в false                 ------------------
+def set_wait_false(user_id: int):
+    cur.execute(f"UPDATE users SET is_requested = false where id = {user_id}")
+    con.commit()

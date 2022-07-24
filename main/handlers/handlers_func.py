@@ -207,8 +207,7 @@ async def agree_request(message: types.Message):
                 await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
                 await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
 
-                cur.execute(f"update users set is_requested = false where id = {new_u_id}")
-                con.commit()
+                set_wait_false(new_u_id)
                 cur.execute(f"select requests from groups where group_id = {group_id}")
                 data = list(cur.fetchone()[0])
                 data.remove(int(new_u_id))
@@ -238,6 +237,7 @@ async def disagree_request(message: types.Message):
             con.commit()
 
             await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
+            set_wait_false(new_u_id)
             name = get_uname(new_u_id)
             await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
 
@@ -438,6 +438,7 @@ async def leave_group(message: types.Message):
         else:
 
             for user in disagree_requests(group_id):
+                set_wait_false(user)
                 await bot.send_message(user, "Заявка отклонена, т.к. группа была удалена")
 
             for cur_user in send_warnings(group_id):
