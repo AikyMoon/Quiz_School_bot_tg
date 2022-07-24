@@ -149,8 +149,12 @@ def add_ready_group_tasks(task_id: int, group_id: int):
 # ------------------ решила ли группа уже задачу         ------------------
 def check_group_task(task_id: str, group_id: int) -> bool:
     cur.execute(f"select ready_qs_id from groups where group_id = {group_id}")
-    data = [i for i in cur.fetchone()[0] if i]
-    return int(task_id) in data
+    res = cur.fetchone()[0]
+    if res:
+        data = [i for i in cur.fetchone()[0] if i]
+        return int(task_id) in data
+    else:
+        return False
 
 
 # ------------------ количесто очков группы            ------------------
