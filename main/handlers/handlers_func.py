@@ -230,7 +230,7 @@ async def disagree_request(message: types.Message):
             cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
             con.commit()
 
-            await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу {group_id} отклонен")
+            await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
             name = get_uname(new_u_id)
             await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
 
@@ -262,9 +262,7 @@ async def kick_user(message: types.Message):
             name = get_uname(target_u_id)
 
             await bot.send_message(u_id, f"{name} был выгнан из группы")
-            await bot.send_message(target_u_id, f"Вы были выгнаны из группы\n"
-                                                f"id: {group_id}\n"
-                                                f"Имя: {get_group_name(group_id)}")
+            await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
 
 
 # ------------------вывод текста задачи            ------------------
