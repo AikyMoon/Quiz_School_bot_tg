@@ -282,7 +282,7 @@ async def print_task(message: types.Message):
     else:
         _, task_id = message.text.split()
 
-        if check_task_type(task_id):
+        if check_task_type(int(task_id)):
             if check_task(u_id) != 0:
                 await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}")
                 task_text, task_manual = get_task(check_task(u_id))
