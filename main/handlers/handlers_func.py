@@ -283,25 +283,29 @@ async def print_task(message: types.Message):
         _, task_id = message.text.split()
 
         if check_task_type(int(task_id)):
-            if check_task(u_id) != 0:
-                await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
-                                             f"ищите условие выше")
-            else:
 
-                group_id = get_group_id(u_id)
-                if check_group_task(task_id, group_id):
-                    await bot.send_message(u_id, "Вы уже решали эту задачу")
+            if check_role(u_id):
+                await bot.send_message(u_id, "Решать такие задачи может только капитан")
+            else:
+                if check_task(u_id) != 0:
+                    await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
+                                                 f"ищите условие выше")
                 else:
-                    if check_task_act_counts(task_id):
-                        task_text, task_manual = get_task(int(task_id))
-                        task_bind(task_id, u_id)
-                        if task_manual != "nan":
-                            await bot.send_message(u_id, "Текст задачи: \n" + task_text)
-                            await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
-                        else:
-                            await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+
+                    group_id = get_group_id(u_id)
+                    if check_group_task(task_id, group_id):
+                        await bot.send_message(u_id, "Вы уже решали эту задачу")
                     else:
-                        await bot.send_message(u_id, "Эту задачу уже нельзя решить")
+                        if check_task_act_counts(task_id):
+                            task_text, task_manual = get_task(int(task_id))
+                            task_bind(task_id, u_id)
+                            if task_manual != "nan":
+                                await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                                await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
+                            else:
+                                await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                        else:
+                            await bot.send_message(u_id, "Эту задачу уже нельзя решить")
         else:
             points = without_answer(u_id, task_id)
             await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
