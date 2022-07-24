@@ -36,7 +36,7 @@ async def register(message: types.Message):
         if len(message.text.split()) < 3:
             await bot.send_message(u_id, "Введите /reg и через пробел имя и фамилию до 255 символов")
         else:
-            _, first_name, last_name, _ = message.text.split()
+            _, first_name, last_name = message.text.split()
 
             if len(first_name) > 255 or len(last_name) > 255:
                 await bot.send_message(u_id, "Имя и фамилия должны быть не больше 255 символов")
