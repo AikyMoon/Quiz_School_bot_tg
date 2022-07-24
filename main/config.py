@@ -21,3 +21,12 @@ CACHE = {}
 ADMINS_ID = {
     "ZAHAR": 1047354271
 }
+
+COMMANDS = {
+    "non_register": ["/reg", "/admin", "/help"],
+    "without_group": ["/create", "/invite", "/admin", "/help", "/profile"],
+    "player": ["/statistics", "/task", "/admin", "/help", "/leave", "/profile"],
+    "master": ["/statistics", "/users", "/group_info",
+               "/ok", "/no", "/kick", "/task", "/answer",
+               "/leave", "/exit", "/admin", "/help", "/profile"]
+}

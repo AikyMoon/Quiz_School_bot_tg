@@ -30,9 +30,8 @@ async def starting(message: types.Message):
 @dp.message_handler(commands=["reg"])
 async def register(message: types.Message):
     u_id = message.chat.id
-    if check_id(u_id):
-        await bot.send_message(u_id, f"Вы уже зарегестрированны по именем {get_uname(u_id)}")
-    else:
+
+    if can_use(u_id, "/reg"):
         if len(message.text.split()) < 3:
             await bot.send_message(u_id, "Введите /reg и через пробел имя и фамилию до 255 символов")
         else:
@@ -43,6 +42,9 @@ async def register(message: types.Message):
             else:
                 set_name(u_id, first_name, last_name)
                 await bot.send_message(u_id, "Регистрация прошла успешно")
+    else:
+
+        await bot.send_message(u_id, f"Вы уже зарегестрированны по именем {get_uname(u_id)}")
 
 
 # ------------------ вывод списка доступных команд    ------------------
@@ -55,14 +57,12 @@ async def print_help(message: types.Message):
                 text = "Список доступных команд:\n" \
                        "/statistics - вывод статистики команды\n" \
                        "/admin - выводит контакт для связи с админом\n" \
-                       "/task <task_id> - вывод задачи\n" \
-                       "/answer <answer> - ответ к задаче, отвечать могут только капитаны\n"
+                       "/task <task_id> - вывод задачи\n"
             else:
                 text = "Список доступных команд\n" \
                        "/statistics - вывод статистики команды\n" \
                        "/users - вывод участников группы\n" \
-                       "/group_settings - вывод информации о группе\n" \
-                       "/mail - вывод запросов на вступление\n" \
+                       "/group_info - вывод информации о группе\n" \
                        "/ok <user_id> - подтверждение запроса на вступление\n" \
                        "/no <user_id> - отклонение запроса на вступление\n" \
                        "/kick <user_id> - убрать из группы пользователя\n" \
@@ -73,7 +73,7 @@ async def print_help(message: types.Message):
         else:
             text = "Список доступных команд:\n" \
                    f"/create <group_name> - создание команды (не более {MAX_GROUP_USERS}-ти человек)\n" \
-                   "/entry <group_id> - войти в группу по id (id есть у капитана)\n" \
+                   "/invite <group_id> - войти в группу по id (id есть у капитана)\n" \
                    "/admin - выводит контакт для связи с админом"
     else:
         text = "Список доступных команд:\n" \
@@ -97,7 +97,7 @@ async def admin_contact(message: types.Message):
 async def group_create(message: types.Message):
     u_id = message.chat.id
 
-    if check_role(u_id):
+    if can_use(u_id, "/create"):
         new_group_id = generate_group_id()
         if len(message.text.split()) != 2:
             await bot.send_message(u_id, "Напишите  /create и через пробел имя команды")
@@ -113,13 +113,11 @@ async def group_create(message: types.Message):
 
 
 # ------------------  вывод настроек группы           ------------------
-@dp.message_handler(commands=["group_settings"])
+@dp.message_handler(commands=["group_info"])
 async def print_settings(message: types.Message):
     u_id = message.chat.id
 
-    if check_role(u_id):
-        await bot.send_message(u_id, "Команду может использовать только капитан")
-    else:
+    if can_use(u_id, "/group_info"):
         group_id = get_group_id(u_id)
         users_count = get_users_count(group_id)
         text = f"Настройки группы:\n" \
@@ -127,28 +125,31 @@ async def print_settings(message: types.Message):
                f"Количество пользователей {users_count} из {MAX_GROUP_USERS}"
 
         await bot.send_message(u_id, text)
+    else:
+        await bot.send_message(u_id, "Команду может использовать только капитан")
 
 
 # ------------------  вывод участников команды           ------------------
 @dp.message_handler(commands=["users"])
 async def print_users(message: types.Message):
     u_id = message.chat.id
-    if check_role(u_id):
-        await bot.send_message(u_id, "Команду может использовать только капитан")
-    else:
+
+    if can_use(u_id, "/users"):
         group_id = get_group_id(u_id)
         text = get_users(group_id)
 
         await bot.send_message(u_id, text)
 
+    else:
+        await bot.send_message(u_id, "Команду может использовать только капитан")
+
 
 # ------------------отправка заявки на вступление в группу------------------
-@dp.message_handler(commands=["entry"])
+@dp.message_handler(commands=["invite"])
 async def entry(message: types.Message):
     u_id = message.chat.id
 
-    if check_role(u_id):
-
+    if can_use(u_id, "/invite"):
         if check_group(u_id):
             await bot.send_message(u_id, "Вы уже в группе")
         else:
@@ -163,23 +164,14 @@ async def entry(message: types.Message):
                         new_group_requests(group_id, u_id)
                         set_wait_true(u_id)
                         await bot.send_message(u_id, "Заявка отправлена, ожидайте подтверждения")
+
+                        capitan = get_capitan(group_id)
+                        await bot.send_message(capitan, f"id: {u_id} {get_uname(u_id)} хочет вступить в вашу группу")
+
                     else:
                         await bot.send_message(u_id, "Количество участников достигло лимита")
     else:
         await bot.send_message(u_id, "Команду могут использовать только игроки")
-
-
-# ------------------вывод всех входящих заявок            ------------------
-@dp.message_handler(commands=["mail"])
-async def mail(message: types.Message):
-    u_id = message.chat.id
-
-    if check_role(u_id):
-        await bot.send_message(u_id, "Команду может использовать только капитан")
-    else:
-        group_id = get_group_id(u_id)
-        text = get_users_from_requests(group_id)
-        await bot.send_message(u_id, text)
 
 
 # ------------------добавление нового участника          ------------------
@@ -187,7 +179,7 @@ async def mail(message: types.Message):
 async def agree_request(message: types.Message):
     u_id = message.chat.id
 
-    if check_role(u_id):
+    if can_use(u_id, "/ok"):
         await bot.send_message(u_id, "Команду может использовать только капитан")
     else:
         group_id = get_group_id(u_id)
@@ -220,7 +212,7 @@ async def agree_request(message: types.Message):
 async def disagree_request(message: types.Message):
     u_id = message.chat.id
 
-    if check_role(u_id):
+    if can_use(u_id, "/no"):
         await bot.send_message(u_id, "Команду может использовать только капитан")
     else:
         group_id = get_group_id(u_id)
@@ -246,7 +238,7 @@ async def disagree_request(message: types.Message):
 async def kick_user(message: types.Message):
     u_id = message.chat.id
 
-    if check_role(u_id):
+    if can_use(u_id, "/kick"):
         await bot.send_message(u_id, "Команду может использовать только капитан")
     else:
         if len(message.text.split()) != 2:
@@ -277,38 +269,41 @@ async def kick_user(message: types.Message):
 @dp.message_handler(commands=["task"])
 async def print_task(message: types.Message):
     u_id = message.chat.id
-    if len(message.text.split()) != 2:
-        await bot.send_message(u_id, "Напишите /task и через пробел id задачи")
-    else:
-        _, task_id = message.text.split()
-
-        if check_task_type(int(task_id)):
-
-            if check_role(u_id):
-                await bot.send_message(u_id, "Решать такие задачи может только капитан")
-            else:
-                if check_task(u_id) != 0:
-                    await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
-                                                 f"ищите условие выше")
-                else:
-
-                    group_id = get_group_id(u_id)
-                    if check_group_task(task_id, group_id):
-                        await bot.send_message(u_id, "Вы уже решали эту задачу")
-                    else:
-                        if check_task_act_counts(task_id):
-                            task_text, task_manual = get_task(int(task_id))
-                            task_bind(task_id, u_id)
-                            if task_manual != "nan":
-                                await bot.send_message(u_id, "Текст задачи: \n" + task_text)
-                                await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
-                            else:
-                                await bot.send_message(u_id, "Текст задачи: \n" + task_text)
-                        else:
-                            await bot.send_message(u_id, "Эту задачу уже нельзя решить")
+    if can_use(u_id, "/task"):
+        if len(message.text.split()) != 2:
+            await bot.send_message(u_id, "Напишите /task и через пробел id задачи")
         else:
-            points = without_answer(u_id, task_id)
-            await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+            _, task_id = message.text.split()
+
+            if check_task_type(int(task_id)):
+
+                if check_role(u_id):
+                    await bot.send_message(u_id, "Решать такие задачи может только капитан")
+                else:
+                    if check_task(u_id) != 0:
+                        await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
+                                                     f"ищите условие выше")
+                    else:
+
+                        group_id = get_group_id(u_id)
+                        if check_group_task(task_id, group_id):
+                            await bot.send_message(u_id, "Вы уже решали эту задачу")
+                        else:
+                            if check_task_act_counts(task_id):
+                                task_text, task_manual = get_task(int(task_id))
+                                task_bind(task_id, u_id)
+                                if task_manual != "nan":
+                                    await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                                    await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
+                                else:
+                                    await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                            else:
+                                await bot.send_message(u_id, "Эту задачу уже нельзя решить")
+            else:
+                points = without_answer(u_id, task_id)
+                await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+    else:
+        await bot.send_message(u_id, "Команду могут использовать игроки или капитаны команд")
 
 
 # ------------------ ответ на задачу                ------------------
@@ -316,58 +311,107 @@ async def print_task(message: types.Message):
 async def send_answer(message: types.Message):
     u_id = message.chat.id
 
-    if check_task(u_id) == 0:
-        await bot.send_message(u_id, "У вас нет текущей задачи")
-    else:
-        if len(message.text.split()) != 2:
-            await bot.send_message(u_id, "Напишите /answer и через пробел ответ")
+    if can_use(u_id, "/answer"):
+        if check_task(u_id) == 0:
+            await bot.send_message(u_id, "У вас нет текущей задачи")
         else:
-            _, answer = message.text.split()
-            task_id = check_task(u_id)
-            if check_answer(task_id, answer.lower()):
-                group_id = get_group_id(u_id)
-
-                points = get_points(task_id)
-                add_points(group_id, points)
-                activation_decriment(task_id)
-                add_ready_group_tasks(task_id, group_id)
-                unbind_task(u_id)
-
-                await bot.send_message(u_id, f"Правильный ответ, вы получили {points} баллов\n"
-                                             f"Теперь вы можете решать другие задачи")
+            if len(message.text.split()) != 2:
+                await bot.send_message(u_id, "Напишите /answer и через пробел ответ")
             else:
-                await bot.send_message(u_id, "Неправильный ответ")
+                _, answer = message.text.split()
+                task_id = check_task(u_id)
+                if check_answer(task_id, answer.lower()):
+                    group_id = get_group_id(u_id)
+
+                    points = get_points(task_id)
+                    add_points(group_id, points)
+                    activation_decriment(task_id)
+                    add_ready_group_tasks(task_id, group_id)
+                    unbind_task(u_id)
+
+                    await bot.send_message(u_id, f"Правильный ответ, вы получили {points} баллов\n"
+                                                 f"Теперь вы можете решать другие задачи")
+                else:
+                    await bot.send_message(u_id, "Неправильный ответ")
+    else:
+        await bot.send_message(u_id, "Команду могут использовать только капитаны")
 
 
 # ------------------ решать другие задачи           ------------------
 @dp.message_handler(commands=["exit"])
 async def task_exit(message: types.Message):
     u_id = message.chat.id
-    unbind_task(u_id)
 
-    await bot.send_message(u_id, "Теперь вы можете решать другие задачи")
+    if can_use(u_id, "/exit"):
+        unbind_task(u_id)
+
+        await bot.send_message(u_id, "Теперь вы можете решать другие задачи")
+    else:
+        await bot.send_message(u_id, "Команду могут использовать только капитаны")
 
 
 # ------------------ статистика команды             ------------------
 @dp.message_handler(commands=["statistics"])
 async def group_statistics(message: types.Message):
     u_id = message.chat.id
-    group_id = get_group_id(u_id)
-    users_count = get_users_count(group_id)
-    group_points = get_group_points(group_id)
-    task_count = get_task_count(group_id)
-    group_name = get_group_name(group_id)
 
-    sep = "-" * 40 + "\n"
-    pre_head = f"Название группы: {group_name}\n"
-    head = "*** Статистика группы ***\n"
-    part_1 = f"Количество пользователей: {users_count}/{MAX_GROUP_USERS}\n"
-    part_2 = get_users(group_id) + "\n"
-    part_3 = f"Количество очков: {group_points}\n"
-    part_4 = f"Количество решенных задач: {task_count}\n"
+    if can_use(u_id, "/statistics"):
+        group_id = get_group_id(u_id)
+        users_count = get_users_count(group_id)
+        group_points = get_group_points(group_id)
+        task_count = get_task_count(group_id)
+        group_name = get_group_name(group_id)
 
-    data_text = [head, pre_head, part_1, part_2, part_3, part_4]
+        sep = "-" * 40 + "\n"
 
-    text = sep.join(data_text)
+        if check_role(u_id):
+            pre_head = f"Название группы: {group_name}\n"
+            head = "*** Статистика группы ***\n"
+            part_1 = f"Количество пользователей: {users_count}/{MAX_GROUP_USERS}\n"
+            part_3 = f"Количество очков: {group_points}\n"
+            part_4 = f"Количество решенных задач: {task_count}\n"
 
-    await bot.send_message(u_id, text)
+            data_text = [head, pre_head, part_1, part_3, part_4]
+            text = sep.join(data_text)
+
+            await bot.send_message(u_id, text)
+
+        else:
+
+            pre_head = f"Название группы: {group_name}\n"
+            head = "*** Статистика группы ***\n"
+            part_1 = f"Количество пользователей: {users_count}/{MAX_GROUP_USERS}\n"
+            part_2 = get_users(group_id) + "\n"
+            part_3 = f"Количество очков: {group_points}\n"
+            part_4 = f"Количество решенных задач: {task_count}\n"
+
+            data_text = [head, pre_head, part_1, part_2, part_3, part_4]
+
+            text = sep.join(data_text)
+
+            await bot.send_message(u_id, text)
+    else:
+        await bot.send_message(u_id, "Команду могут использовать капитаны или участники команд")
+
+
+# ------------------ профиль игрока                   ------------------
+@dp.message_handler(commands=["profile"])
+async def user_profile(message: types.Message):
+    u_id = message.chat.id
+
+    if can_use(u_id, "/profile"):
+        name = get_uname(u_id)
+        group_id = get_group_id(u_id)
+        group_id_text = "отсутствует" if group_id is None else group_id
+        wait = "ожидание" if check_wait(u_id) else "нет запросов на вступление"
+
+        text = "Ваш профиль: \n" \
+               f"id: {u_id}\n" \
+               f"Имя: {name}\n" \
+               f"Группа: {group_id_text}\n" \
+               f"Запросы на вступление: {wait}"
+
+        await bot.send_message(u_id, text)
+
+    else:
+        await bot.send_message(u_id, "Команду могут использовать только зарегестрированные пользователи")

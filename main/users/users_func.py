@@ -1,5 +1,6 @@
 from main.db_connect import *
-
+from main.config import COMMANDS
+from main.groups import check_group
 
 # ------------------ проверка роли                ------------------
 def check_role(user_id: int) -> bool:
@@ -64,3 +65,17 @@ def check_task(user_id: int) -> int:
 def unbind_task(user_id):
     cur.execute(f"update users set task_id = null where id = {user_id}")
     con.commit()
+
+
+# ------------------ проверка возможности использования команды------------------
+def can_use(user_id: int, command: str) -> bool:
+    if check_id(user_id):
+        if check_group(user_id):
+            if check_role(user_id):
+                return command in COMMANDS["master"]
+            else:
+                return command in COMMANDS["player"]
+        else:
+            return command in COMMANDS["without_group"]
+    else:
+        return command in COMMANDS["non_register"]

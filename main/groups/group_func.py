@@ -175,3 +175,9 @@ def get_task_count(group_id: int) -> int:
         return len(cur.fetchone()[0])
     except:
         return 0
+
+
+# ------------------ получение капитана                    ------------------
+def get_capitan(group_id: int) -> int:
+    cur.execute(f"select id from users where group_id = {group_id} and is_player = false")
+    return cur.fetchone()[0]
