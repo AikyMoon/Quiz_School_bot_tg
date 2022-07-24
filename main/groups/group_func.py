@@ -159,4 +159,7 @@ def get_group_points(group_id: int) -> int:
 # ------------------ кол-во решенных задач              ------------------
 def get_task_count(group_id: int) -> int:
     cur.execute(f"select ready_qs_id from groups where group_id = {group_id}")
-    return len(cur.fetchone()[0])
+    try:
+        return len(cur.fetchone()[0])
+    except:
+        return 0
