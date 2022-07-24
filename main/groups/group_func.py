@@ -140,8 +140,12 @@ def add_points(group_id: int, points: int):
 # ------------------ добавление решенных задач          ------------------
 def add_ready_group_tasks(task_id: int, group_id: int):
     cur.execute(f"select ready_qs_id from groups where group_id = {group_id}")
-    data = [i for i in cur.fetchone()[0] if i]
-    data.append(task_id)
+    res = cur.fetchone()[0]
+    if res:
+        data = [i for i in cur.fetchone()[0] if i]
+        data.append(task_id)
+    else:
+        data = [task_id]
     cur.execute(f"update groups set ready_qs_id = ARRAY{data} where group_id = {group_id}")
     con.commit()
 
