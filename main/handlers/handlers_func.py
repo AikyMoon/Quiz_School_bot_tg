@@ -182,7 +182,7 @@ async def entry(message: types.Message):
                 await bot.send_message(u_id, "Вы уже в группе")
             else:
                 if len(message.text.split()) != 2:
-                    await bot.send_message(u_id, "Напишите /entry и через пробел id команды")
+                    await bot.send_message(u_id, "Напишите /invite и через пробел id команды")
                 else:
                     _, group_id = message.text.split()
 
