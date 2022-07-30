@@ -7,6 +7,7 @@ PASSWORD = "345msk00"
 HOST = "127.0.0.1"
 PORT = "5432"
 DATABASE = "quiz_data"
+DATABASE_URL = "postgres://gdlwdfdygdqmmu:d748b3985fb8307c090a8af1067172b4777904bf5885ffec1c66e235b196d72f@ec2-3-248-121-12.eu-west-1.compute.amazonaws.com:5432/d7m109ll4k6t29"
 
 # ------------------ имена админов в телеге   ------------------
 admins = {
@@ -18,8 +19,8 @@ MAX_GROUP_USERS = 4
 
 CACHE = {}
 
-ADMINS_ID = {
-    "ZAHAR": 1047354271
+ADMINS_IDS = {
+    1047354271: "ZAHAR"
 }
 
 COMMANDS = {
@@ -30,3 +31,5 @@ COMMANDS = {
                "/ok", "/no", "/kick", "/task", "/answer",
                "/leave", "/exit", "/admin", "/help", "/profile"]
 }
+
+GAME_STATE = "not started"
