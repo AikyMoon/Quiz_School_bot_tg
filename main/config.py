@@ -32,4 +32,3 @@ COMMANDS = {
                "/leave", "/exit", "/admin", "/help", "/profile"]
 }
 
-GAME_STATE = "not started"

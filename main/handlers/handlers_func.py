@@ -6,6 +6,8 @@ from main.config import *
 from main.admins import *
 from aiogram import types
 
+GAME_STATE = "not started"
+
 
 # ------------------ уникальные задачи                  ------------------
 def without_answer(user_id: int, task_id: int) -> int:
@@ -557,10 +559,13 @@ async def leave_group(message: types.Message):
 # ------------------ админские хэндлеры        ------------------
 @dp.message_handler(commands=['start_game'])
 async def start_game(message: types.Message):
+    global GAME_STATE
+
     u_id = message.chat.id
 
     if is_admin(u_id):
         GAME_STATE = "started"
+        await bot.send_message(u_id, "Игра началась)))")
     else:
         await bot.send_message(message.chat.id, "Я не знаю, что делать :(\n"
                                                 "напиши /help, чтобы узнать, что я могу")
@@ -568,10 +573,13 @@ async def start_game(message: types.Message):
 
 @dp.message_handler(commands=['end_game'])
 async def start_game(message: types.Message):
+    global GAME_STATE
+
     u_id = message.chat.id
 
     if is_admin(u_id):
         GAME_STATE = "finished"
+        await bot.send_message(u_id, "Игра закончена")
     else:
         await bot.send_message(message.chat.id, "Я не знаю, что делать :(\n"
                                                 "напиши /help, чтобы узнать, что я могу")
@@ -579,10 +587,13 @@ async def start_game(message: types.Message):
 
 @dp.message_handler(commands=['restart_game'])
 async def start_game(message: types.Message):
+    global GAME_STATE
+
     u_id = message.chat.id
 
     if is_admin(u_id):
         GAME_STATE = "not started"
+        await bot.send_message(u_id, "Игра была перезагружена")
     else:
         await bot.send_message(message.chat.id, "Я не знаю, что делать :(\n"
                                                 "напиши /help, чтобы узнать, что я могу")
