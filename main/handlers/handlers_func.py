@@ -389,7 +389,8 @@ async def print_task(message: types.Message):
                 await bot.send_message(u_id, "Команду могут использовать игроки или капитаны команд")
         except:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
-    await bot.send_message(u_id, "Команду можно использовать только во время игры")
+    else:
+        await bot.send_message(u_id, "Команду можно использовать только во время игры")
 
 
 # ------------------ ответ на задачу                ------------------
