@@ -1,5 +1,5 @@
 from main.db_connect import *
-from main.config import COMMANDS, GAME_STATE
+from main.config import COMMANDS
 from main.groups import check_group
 
 

@@ -1,6 +1,6 @@
 .idea
 quiz_bot.iml
 tasks_auto
-main/users/debug_bot.py
+main/debug_bot.py
 admins
 .ipynb_checkpoints
