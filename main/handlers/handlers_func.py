@@ -250,7 +250,7 @@ async def agree_request(message: types.Message):
                         _, new_u_id = message.text.split()
 
                         if check_id(new_u_id):
-                            if check_in_mail(group_id, new_u_id):
+                            if check_in_mail(group_id, int(new_u_id)):
                                 if not check_group(new_u_id):
                                     add_user_group(group_id, new_u_id)
 
