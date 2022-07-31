@@ -250,24 +250,26 @@ async def agree_request(message: types.Message):
                         _, new_u_id = message.text.split()
 
                         if check_id(new_u_id):
-                            if not check_group(new_u_id):
-                                add_user_group(group_id, new_u_id)
+                            if check_in_mail(group_id, new_u_id):
+                                if not check_group(new_u_id):
+                                    add_user_group(group_id, new_u_id)
 
-                                user = get_uname(new_u_id)
-                                group_name = get_group_name(group_id)
+                                    user = get_uname(new_u_id)
+                                    group_name = get_group_name(group_id)
 
-                                await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
-                                await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+                                    await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
+                                    await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
 
-                                set_wait_false(new_u_id)
-                                cur.execute(f"select requests from groups where group_id = {group_id}")
-                                data = list(cur.fetchone()[0])
-                                data.remove(int(new_u_id))
-                                cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
-                                con.commit()
+                                    set_wait_false(new_u_id)
+                                    cur.execute(f"select requests from groups where group_id = {group_id}")
+                                    data = list(cur.fetchone()[0])
+                                    data.remove(int(new_u_id))
+                                    cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                                    con.commit()
+                                else:
+                                    await bot.send_message(u_id, f"Данный участник находится в группе")
                             else:
-                                user = get_uname(new_u_id)
-                                await bot.send_message(u_id, f"Участник {''.join(user)} уже состоит в группе")
+                                await bot.send_message(u_id, "От данного участника нет запросов на вступление")
                         else:
                             await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
         except:
@@ -286,25 +288,29 @@ async def disagree_request(message: types.Message):
                 await bot.send_message(u_id, "Команду может использовать только капитан")
             else:
                 group_id = get_group_id(u_id)
-
                 if len(message.text.split()) != 2:
                     await bot.send_message(u_id, "Напишите /no и через пробел id участника")
                 else:
                     _, new_u_id = message.text.split()
+                    if not check_group(new_u_id):
+                        if check_in_mail(group_id, new_u_id):
+                            if check_id(new_u_id):
+                                cur.execute(f"select requests from groups where group_id = {group_id}")
+                                data = list(cur.fetchone()[0])
+                                data.remove(int(new_u_id))
+                                cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                                con.commit()
 
-                    if check_id(new_u_id):
-                        cur.execute(f"select requests from groups where group_id = {group_id}")
-                        data = list(cur.fetchone()[0])
-                        data.remove(int(new_u_id))
-                        cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
-                        con.commit()
-
-                        await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
-                        set_wait_false(new_u_id)
-                        name = get_uname(new_u_id)
-                        await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
+                                await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
+                                set_wait_false(new_u_id)
+                                name = get_uname(new_u_id)
+                                await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
+                            else:
+                                await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
+                        else:
+                            await bot.send_message(u_id, "от данного участника нет запросов")
                     else:
-                        await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
+                        await bot.send_message(u_id, "Данный уастник находится в группе")
         except:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
     else:
@@ -324,27 +330,33 @@ async def kick_user(message: types.Message):
                     await bot.send_message(u_id, "Напишите /kick и через пробел id участнкиа")
                 else:
                     _, target_u_id = message.text.split()
-
-                    if check_id(target_u_id):
+                    if check_group(target_u_id):
                         group_id = get_group_id(u_id)
+                        if check_in_your_group(group_id, target_u_id):
+                            if check_id(target_u_id):
+                                group_id = get_group_id(u_id)
 
-                        cur.execute(f"select group_users_id from groups where group_id = {group_id}")
-                        data = list(cur.fetchone()[0])
-                        data.remove(int(target_u_id))
+                                cur.execute(f"select group_users_id from groups where group_id = {group_id}")
+                                data = list(cur.fetchone()[0])
+                                data.remove(int(target_u_id))
 
-                        cur.execute(
-                            f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
-                        con.commit()
+                                cur.execute(
+                                    f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
+                                con.commit()
 
-                        cur.execute(f"update users set group_id = null where id = {target_u_id}")
-                        con.commit()
+                                cur.execute(f"update users set group_id = null where id = {target_u_id}")
+                                con.commit()
 
-                        name = get_uname(target_u_id)
+                                name = get_uname(target_u_id)
 
-                        await bot.send_message(u_id, f"{name} был выгнан из группы")
-                        await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
+                                await bot.send_message(u_id, f"{name} был выгнан из группы")
+                                await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
+                            else:
+                                await bot.send_message(u_id, "Убедитесь в правильности написания id участника")
+                        else:
+                            await bot.send_message(u_id, "Участник не в вашей группе")
                     else:
-                        await bot.send_message(u_id, "Убедитесь в правильности написания id участника")
+                        await bot.send_message(u_id, "Участника нет в группе")
         except:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
     else:

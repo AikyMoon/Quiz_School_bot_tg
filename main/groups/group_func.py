@@ -254,3 +254,17 @@ def set_cooldown(group_id: int):
     cur_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cur.execute(f"update groups set last_send='{cur_time}' where group_id = {group_id}")
     con.commit()
+
+
+# ------------------ есть ли в инвайтах                   ------------------
+def check_in_mail(group_id: int, user_id: int) -> bool:
+    cur.execute(f"select requests from groups where group_id = {group_id}")
+    requests = cur.fetchone()[0]
+    return user_id in requests
+
+
+# ------------------ в твоей ли группе                   ------------------
+def check_in_your_group(group_id: int, user_id: int) -> bool:
+    cur.execute(f"select group_users_id from groups where group_id = {group_id}")
+    your_ids = cur.fetchone()[0]
+    return user_id in your_ids
