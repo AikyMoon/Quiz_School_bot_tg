@@ -250,20 +250,24 @@ async def agree_request(message: types.Message):
                         _, new_u_id = message.text.split()
 
                         if check_id(new_u_id):
-                            add_user_group(group_id, new_u_id)
+                            if not check_group(new_u_id):
+                                add_user_group(group_id, new_u_id)
 
-                            user = get_uname(new_u_id)
-                            group_name = get_group_name(group_id)
+                                user = get_uname(new_u_id)
+                                group_name = get_group_name(group_id)
 
-                            await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
-                            await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+                                await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
+                                await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
 
-                            set_wait_false(new_u_id)
-                            cur.execute(f"select requests from groups where group_id = {group_id}")
-                            data = list(cur.fetchone()[0])
-                            data.remove(int(new_u_id))
-                            cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
-                            con.commit()
+                                set_wait_false(new_u_id)
+                                cur.execute(f"select requests from groups where group_id = {group_id}")
+                                data = list(cur.fetchone()[0])
+                                data.remove(int(new_u_id))
+                                cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                                con.commit()
+                            else:
+                                user = get_uname(new_u_id)
+                                await bot.send_message(u_id, f"Участник {''.join(user)} уже состоит в группе")
                         else:
                             await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
         except:
