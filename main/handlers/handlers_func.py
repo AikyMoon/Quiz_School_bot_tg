@@ -413,10 +413,10 @@ async def send_answer(message: types.Message):
                 if check_task(u_id) == 0:
                     await bot.send_message(u_id, "У вас нет текущей задачи")
                 else:
-                    if len(message.text.split()) != 2:
+                    if len(message.text.split()) < 2:
                         await bot.send_message(u_id, "Напишите /answer и через пробел ответ")
                     else:
-                        _, answer = message.text.split()
+                        answer = message.text.strip("/answer").lower()
                         task_id = check_task(u_id)
                         if check_answer(task_id, answer.lower()):
                             group_id = get_group_id(u_id)
