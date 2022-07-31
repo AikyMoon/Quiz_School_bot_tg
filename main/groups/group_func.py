@@ -1,6 +1,7 @@
 from main.db_connect import *
-from main.config import CACHE
+from main.config import CACHE, COOLDOWN_MIN
 from random import choice
+from datetime import *
 
 
 # ------------------ состоит ли пользователь в группе   ------------------
@@ -235,3 +236,21 @@ def check_group_id(group_id: int) -> bool:
     if cur.fetchone():
         return True
     return False
+
+
+# ------------------ откатился ли кулдаун                  ------------------
+def check_cooldown(group_id: int) -> bool:
+    cur.execute(f"select last_send from groups where group_id = {group_id}")
+    last_send = cur.fetchone()[0]
+    delta = datetime.now() - last_send
+
+    if delta.total_seconds() > COOLDOWN_MIN * 60:
+        return True
+    return False
+
+
+# ------------------ установка кулдауна                    ------------------
+def set_cooldown(group_id: int):
+    cur_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cur.execute(f"update groups set last_send='{cur_time}' where group_id = {group_id}")
+    con.commit()

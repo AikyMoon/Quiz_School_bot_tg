@@ -6,6 +6,7 @@ from main.config import *
 from main.admins import *
 from aiogram import types
 from random import choice
+from datetime import *
 
 GAME_STATE = "not started"
 
@@ -353,44 +354,47 @@ async def print_task(message: types.Message):
     if GAME_STATE == "started":
         try:
             if can_use(u_id, "/task"):
-                if len(message.text.split()) != 2:
-                    await bot.send_message(u_id, "Напишите /task и через пробел id задачи")
-                else:
-                    _, task_id = message.text.split()
-
-                    if check_task_id(task_id):
-
-                        if check_task_type(int(task_id)):
-
-                            if check_role(u_id):
-                                await bot.send_message(u_id, "Решать такие задачи может только капитан")
-                            else:
-                                if check_task(u_id) != 0:
-                                    await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
-                                                                 f"ищите условие выше")
-                                else:
-
-                                    group_id = get_group_id(u_id)
-                                    if check_group_task(task_id, group_id):
-                                        await bot.send_message(u_id, "Вы уже решали эту задачу")
-                                    else:
-                                        if check_task_act_counts(task_id):
-                                            task_text, task_manual = get_task(int(task_id))
-                                            task_bind(task_id, u_id)
-                                            if task_manual != "nan":
-                                                await bot.send_message(u_id, "Текст задачи: \n" + task_text)
-                                                await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
-                                            else:
-                                                await bot.send_message(u_id, "Текст задачи: \n" + task_text)
-                                            await bot.send_message(u_id, "Чтобы ответить напишите: \n"
-                                                                         "/answer и через пробел ответ")
-                                        else:
-                                            await bot.send_message(u_id, "Эту задачу уже нельзя решить")
-                        else:
-                            points = without_answer(u_id, task_id)
-                            await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+                group_id = get_group_id(u_id)
+                if check_cooldown(group_id):
+                    if len(message.text.split()) != 2:
+                        await bot.send_message(u_id, "Напишите /task и через пробел id задачи")
                     else:
-                        await bot.send_message(u_id, "Убедитесь в правильности написания id задачи")
+                        _, task_id = message.text.split()
+
+                        if check_task_id(task_id):
+
+                            if check_task_type(int(task_id)):
+
+                                if check_role(u_id):
+                                    await bot.send_message(u_id, "Решать такие задачи может только капитан")
+                                else:
+                                    if check_task(u_id) != 0:
+                                        await bot.send_message(u_id, f"Вы уже решаете задачу id: {check_task(u_id)}\n"
+                                                                     f"ищите условие выше")
+                                    else:
+                                        group_id = get_group_id(u_id)
+                                        if check_group_task(task_id, group_id):
+                                            await bot.send_message(u_id, "Вы уже решали эту задачу")
+                                        else:
+                                            if check_task_act_counts(task_id):
+                                                task_text, task_manual = get_task(int(task_id))
+                                                task_bind(task_id, u_id)
+                                                if task_manual != "nan":
+                                                    await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                                                    await bot.send_message(u_id, "Справочная информация: \n" + task_manual)
+                                                else:
+                                                    await bot.send_message(u_id, "Текст задачи: \n" + task_text)
+                                                await bot.send_message(u_id, "Чтобы ответить напишите: \n"
+                                                                             "/answer и через пробел ответ")
+                                            else:
+                                                await bot.send_message(u_id, "Эту задачу уже нельзя решить")
+                            else:
+                                points = without_answer(u_id, task_id)
+                                await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+                        else:
+                            await bot.send_message(u_id, "Убедитесь в правильности написания id задачи")
+                else:
+                    await bot.send_message(u_id, "Подождите немного, чтобы решать дальше")
             else:
                 await bot.send_message(u_id, "Команду могут использовать игроки или капитаны команд")
         except:
@@ -425,6 +429,8 @@ async def send_answer(message: types.Message):
 
                             await bot.send_message(u_id, f"Правильный ответ, вы получили {points} баллов\n"
                                                          f"Теперь вы можете решать другие задачи")
+
+                            set_cooldown(group_id)
                         else:
                             await bot.send_message(u_id, "Неправильный ответ")
             else:
