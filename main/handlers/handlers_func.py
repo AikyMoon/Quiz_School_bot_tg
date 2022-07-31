@@ -416,7 +416,7 @@ async def send_answer(message: types.Message):
                     if len(message.text.split()) < 2:
                         await bot.send_message(u_id, "Напишите /answer и через пробел ответ")
                     else:
-                        answer = message.text.strip("/answer").lower()
+                        answer = message.text.replace("/answer ", "").lower()
                         task_id = check_task(u_id)
                         if check_answer(task_id, answer.lower()):
                             group_id = get_group_id(u_id)
