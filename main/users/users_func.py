@@ -86,3 +86,13 @@ def can_use(user_id: int, command: str) -> bool:
 def set_wait_false(user_id: int):
     cur.execute(f"UPDATE users SET is_requested = false where id = {user_id}")
     con.commit()
+
+
+# ------------------ получение всех пользователей ------------------
+def get_ids() -> list[int]:
+    cur.execute("select id from users")
+    users = []
+    for row in cur.fetchall():
+        users.append(row[0])
+
+    return users

@@ -33,3 +33,10 @@ COMMANDS = {
                "/leave", "/exit", "/admin", "/help", "/profile"]
 }
 
+STICKERS = {
+    "start": [r"CAACAgIAAxkBAAEFbbli5otYY4_49yq0Q1dvcjNrsroJRwACBQADwDZPE_lqX5qCa011KQQ",
+              r"CAACAgIAAxkBAAEFbcNi5oukzgJCzQGPK0OKi3BE9K9HZwAC_wIAAm2wQgMEoDmrNAI2NykE",
+              r"CAACAgIAAxkBAAEFbcVi5ouq2MToSUsDB-IZXWqYOs9GywAC9wEAAhZCawo59nBvtGN_xCkE",
+              r"CAACAgIAAxkBAAEFbcdi5ouwy35lZNF1lS8K-BJ3Pxj0UAACAQEAAladvQoivp8OuMLmNCkE",
+              r"CAACAgIAAxkBAAEFbcli5ou7aJZWOxJ4jGOPzLT9JD2VOwACiwADSTTmGmRdcY9mb007KQQ"],
+}

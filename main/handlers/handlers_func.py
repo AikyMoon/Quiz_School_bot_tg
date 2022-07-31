@@ -5,6 +5,7 @@ from main.tasks import *
 from main.config import *
 from main.admins import *
 from aiogram import types
+from random import choice
 
 GAME_STATE = "not started"
 
@@ -23,14 +24,17 @@ def without_answer(user_id: int, task_id: int) -> int:
 @dp.message_handler(commands=["start"])
 async def starting(message: types.Message):
     u_id = message.chat.id
+    sticker = choice(STICKERS["start"])
     try:
         if check_id(u_id):
             username = get_uname(u_id)
             await bot.send_message(u_id, f"Приветствуем, {username}, "
                                          f"чтобы вывести список доступных команд, напишите /help")
+            await bot.send_sticker(u_id, sticker)
         else:
             await bot.send_message(u_id, "Приветствуем, чтобы продолжить, введите /reg"
                                          " и через пробел имя и фамилию, для регистрации")
+            await bot.send_sticker(u_id, sticker)
     except:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
 
@@ -566,6 +570,10 @@ async def start_game(message: types.Message):
     if is_admin(u_id):
         GAME_STATE = "started"
         await bot.send_message(u_id, "Игра началась)))")
+
+        for user in get_ids():
+            await bot.send_message(user, "Игра началась)))")
+
     else:
         await bot.send_message(message.chat.id, "Я не знаю, что делать :(\n"
                                                 "напиши /help, чтобы узнать, что я могу")
@@ -579,7 +587,10 @@ async def start_game(message: types.Message):
 
     if is_admin(u_id):
         GAME_STATE = "finished"
-        await bot.send_message(u_id, "Игра закончена")
+        await bot.send_message(u_id, "Игра закончена!!!")
+
+        for user in get_ids():
+            await bot.send_message(user, "Игра закончена!!!")
     else:
         await bot.send_message(message.chat.id, "Я не знаю, что делать :(\n"
                                                 "напиши /help, чтобы узнать, что я могу")
