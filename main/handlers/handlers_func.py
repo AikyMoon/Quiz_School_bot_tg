@@ -599,6 +599,14 @@ async def start_game(message: types.Message):
                                                 "напиши /help, чтобы узнать, что я могу")
 
 
+@dp.message_handler(commands=["game_state"])
+async def print_game_state(messgae: types.Message):
+    u_id = messgae.chat.id
+
+    if is_admin(u_id):
+        await bot.send_message(u_id, f"Состояние игры: {GAME_STATE}")
+
+
 # ------------------ все кроме команд        ------------------
 @dp.message_handler()
 async def other(message: types.Message):
