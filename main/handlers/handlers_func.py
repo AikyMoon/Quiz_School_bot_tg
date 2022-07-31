@@ -389,8 +389,14 @@ async def print_task(message: types.Message):
                                             else:
                                                 await bot.send_message(u_id, "Эту задачу уже нельзя решить")
                             else:
-                                points = without_answer(u_id, task_id)
-                                await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+                                if check_group_task(task_id, group_id):
+                                    await bot.send_message(u_id, "Вы уже решали эту задачу")
+                                else:
+                                    if check_task_act_counts(task_id):
+                                        points = without_answer(u_id, task_id)
+                                        await bot.send_message(u_id, f"Вы нашли {points} баллов для команды")
+                                    else:
+                                        await bot.send_message(u_id, "Эту задачу уже нельзя решить")
                         else:
                             await bot.send_message(u_id, "Убедитесь в правильности написания id задачи")
                 else:
