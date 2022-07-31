@@ -260,11 +260,11 @@ def set_cooldown(group_id: int):
 def check_in_mail(group_id: int, user_id: int) -> bool:
     cur.execute(f"select requests from groups where group_id = {group_id}")
     requests = cur.fetchone()[0]
-    return user_id in requests
+    return int(user_id) in requests
 
 
 # ------------------ в твоей ли группе                   ------------------
 def check_in_your_group(group_id: int, user_id: int) -> bool:
     cur.execute(f"select group_users_id from groups where group_id = {group_id}")
     your_ids = cur.fetchone()[0]
-    return user_id in your_ids
+    return int(user_id) in your_ids
