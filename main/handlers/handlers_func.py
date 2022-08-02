@@ -7,6 +7,7 @@ from main.admins import *
 from aiogram import types
 from random import choice
 from datetime import *
+from main.keyboards import *
 
 GAME_STATE = "not started"
 
@@ -217,7 +218,7 @@ async def entry(message: types.Message):
                                     capitan = get_capitan(group_id)
                                     await bot.send_message(capitan, f"id: {u_id}\n"
                                                                     f"Имя: {get_uname(u_id)}\n"
-                                                                    f"Хочет вступить в вашу группу", )
+                                                                    f"Хочет вступить в вашу группу", reply_markup=ar_kb)
 
                                 else:
                                     await bot.send_message(u_id, "Количество участников достигло лимита")
@@ -647,6 +648,13 @@ async def print_game_state(message: types.Message):
     else:
         await bot.send_message(u_id, "Я не знаю, что делать :(\n"
                                                 "напиши /help, чтобы узнать, что я могу")
+
+
+# ------------------ inline кнопки       ------------------
+@dp.callback_query_handler(text="agree")
+async def agree_req(query: types.CallbackQuery):
+    msg_text = query.message.text
+    print(msg_text.split("\n"))
 
 
 # ------------------ все кроме команд        ------------------
