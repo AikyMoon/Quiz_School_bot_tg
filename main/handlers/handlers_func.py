@@ -374,7 +374,7 @@ async def kick_user(message: types.Message):
 
                         for user in disagree_requests(group_id):
                             set_wait_false(user)
-                        await bot.send_message(user, "Заявка отклонена, т.к. группа была удалена")
+                            await bot.send_message(user, "Заявка отклонена, т.к. группа была удалена")
 
                         for cur_user in send_warnings(group_id):
                             unbind_group(cur_user, group_id)
