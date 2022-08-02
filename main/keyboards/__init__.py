@@ -1,1 +1,1 @@
-from accept_reject import ar_kb
+from .accept_reject import ar_kb
