@@ -311,7 +311,7 @@ async def disagree_request(message: types.Message):
                         else:
                             await bot.send_message(u_id, "от данного участника нет запросов")
                     else:
-                        await bot.send_message(u_id, "Данный уастник находится в группе")
+                        await bot.send_message(u_id, "Данный участник находится в группе")
         except:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
     else:
@@ -656,33 +656,77 @@ async def print_game_state(message: types.Message):
 # ------------------ inline кнопки       ------------------
 @dp.callback_query_handler(text="agree")
 async def agree_req(query: types.CallbackQuery):
-    msg_text = query.message.text.split("\n")
-    id_line = msg_text[0]
-    new_u_id = int(id_line.replace("id: ", ""))
-
     u_id = query.message.chat.id
-    group_id = get_group_id(u_id)
+    if GAME_STATE == "non started":
+        try:
+            msg_text = query.message.text.split("\n")
+            id_line = msg_text[0]
+            new_u_id = int(id_line.replace("id: ", ""))
 
-    if check_in_mail(group_id, new_u_id):
-        if not check_group(new_u_id):
-            add_user_group(group_id, new_u_id)
 
-            user = get_uname(new_u_id)
-            group_name = get_group_name(group_id)
+            group_id = get_group_id(u_id)
 
-            await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
-            await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+            if check_in_mail(group_id, new_u_id):
+                if not check_group(new_u_id):
+                    add_user_group(group_id, new_u_id)
 
-            set_wait_false(new_u_id)
-            cur.execute(f"select requests from groups where group_id = {group_id}")
-            data = list(cur.fetchone()[0])
-            data.remove(int(new_u_id))
-            cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
-            con.commit()
-        else:
-            await bot.send_message(u_id, f"Данный участник находится в группе")
+                    user = get_uname(new_u_id)
+                    group_name = get_group_name(group_id)
+
+                    await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
+                    await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+
+                    set_wait_false(new_u_id)
+                    cur.execute(f"select requests from groups where group_id = {group_id}")
+                    data = list(cur.fetchone()[0])
+                    data.remove(int(new_u_id))
+                    cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                    con.commit()
+                else:
+                    await bot.send_message(u_id, f"Данный участник находится в группе")
+            else:
+                await bot.send_message(u_id, "От данного участника нет запросов на вступление")
+        except:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
     else:
-        await bot.send_message(u_id, "От данного участника нет запросов на вступление")
+        await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
+
+
+@dp.callback_query_handler(text="disagree")
+async def disagree_req(query: types.CallbackQuery):
+    u_id = query.message.chat.id
+
+    if GAME_STATE == "non started":
+        try:
+            group_id = get_group_id(u_id)
+            msg_text = query.message.text.split("\n")
+            id_line = msg_text[0]
+            new_u_id = int(id_line.replace("id: ", ""))
+
+            if check_in_mail(group_id, new_u_id):
+                if not check_group(new_u_id):
+                    add_user_group(group_id, new_u_id)
+
+                    user = get_uname(new_u_id)
+                    group_name = get_group_name(group_id)
+
+                    await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
+                    await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
+
+                    set_wait_false(new_u_id)
+                    cur.execute(f"select requests from groups where group_id = {group_id}")
+                    data = list(cur.fetchone()[0])
+                    data.remove(int(new_u_id))
+                    cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
+                    con.commit()
+                else:
+                    await bot.send_message(u_id, f"Данный участник находится в группе")
+            else:
+                await bot.send_message(u_id, "От данного участника нет запросов на вступление")
+        except:
+            await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
+    else:
+        await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
 
 # ------------------ все кроме команд        ------------------
