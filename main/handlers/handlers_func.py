@@ -338,7 +338,7 @@ async def kick_user(message: types.Message):
                     await bot.send_message(u_id, "Напишите /kick и через пробел id участнкиа")
                 else:
                     _, target_u_id = message.text.split()
-                    if check_role(target_u_id):
+                    if check_role(int(target_u_id)):
                         if check_group(target_u_id):
                             group_id = get_group_id(u_id)
                             if check_in_your_group(group_id, target_u_id):
