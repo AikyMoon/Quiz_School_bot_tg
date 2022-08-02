@@ -560,7 +560,7 @@ async def user_profile(message: types.Message):
             text = "*** Ваш профиль *** \n" \
                    f"id: {u_id}\n" \
                    f"Имя: {name}\n" \
-                   f"Группа: {group_id_text}\n" \
+                   f"Группа: {get_group_name(group_id_text)}\n" \
                    f"Запросы на вступление: {wait}"
 
             await bot.send_message(u_id, text)
@@ -680,7 +680,6 @@ async def agree_req(query: types.CallbackQuery):
             msg_text = query.message.text.split("\n")
             id_line = msg_text[0]
             new_u_id = int(id_line.replace("id: ", ""))
-
 
             group_id = get_group_id(u_id)
 
