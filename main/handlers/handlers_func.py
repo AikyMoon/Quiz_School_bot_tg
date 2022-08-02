@@ -744,7 +744,7 @@ async def disagree_req(query: types.CallbackQuery):
 
 
 # ------------------ все кроме команд        ------------------
-@dp.message_handler()
+@dp.message_handler(content_types=[types.Sticker, types.StickerSet, types.Message, types.MediaGroup])
 async def other(message: types.Message):
     await bot.send_message(message.chat.id, "Я не знаю, что делать :(\n"
                                             "напиши /help, чтобы узнать, что я могу")
