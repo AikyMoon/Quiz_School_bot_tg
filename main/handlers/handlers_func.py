@@ -568,7 +568,7 @@ async def leave_group(message: types.Message):
                 group_id = get_group_id(u_id)
                 if check_role(u_id):
                     unbind_group(u_id, group_id)
-                    await bot.send_message("Вы успешно покинули группу")
+                    await bot.send_message(u_id, "Вы успешно покинули группу")
                 else:
 
                     for user in disagree_requests(group_id):
