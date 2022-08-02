@@ -702,25 +702,21 @@ async def disagree_req(query: types.CallbackQuery):
             new_u_id = int(id_line.replace("id: ", ""))
 
             if check_in_mail(group_id, new_u_id):
-                if not check_group(new_u_id):
-                    add_user_group(group_id, new_u_id)
-
-                    user = get_uname(new_u_id)
-                    group_name = get_group_name(group_id)
-
-                    await bot.send_message(u_id, f"Теперь {''.join(user)} в вашей группе")
-                    await bot.send_message(new_u_id, f"Теперь вы в группе:\n id: {group_id}\n Имя: {group_name}")
-
-                    set_wait_false(new_u_id)
+                if check_id(new_u_id):
                     cur.execute(f"select requests from groups where group_id = {group_id}")
                     data = list(cur.fetchone()[0])
                     data.remove(int(new_u_id))
                     cur.execute(f"update groups set requests = ARRAY{data}::integer[] where group_id = {group_id}")
                     con.commit()
+
+                    await bot.send_message(new_u_id, f"Ваш запрос на вступление в группу отклонен")
+                    set_wait_false(new_u_id)
+                    name = get_uname(new_u_id)
+                    await bot.send_message(u_id, f"Запрос на вступление для {name} отклонен")
                 else:
-                    await bot.send_message(u_id, f"Данный участник находится в группе")
+                    await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
             else:
-                await bot.send_message(u_id, "От данного участника нет запросов на вступление")
+                await bot.send_message(u_id, "от данного участника нет запросов")
         except:
             await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
     else:
