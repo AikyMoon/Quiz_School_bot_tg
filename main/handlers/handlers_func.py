@@ -87,8 +87,6 @@ async def print_help(message: types.Message):
                            "/statistics - вывод статистики команды\n" \
                            "/users - вывод участников группы\n" \
                            "/group_info - вывод информации о группе\n" \
-                           "/ok <user_id> - подтверждение запроса на вступление\n" \
-                           "/no <user_id> - отклонение запроса на вступление\n" \
                            "/kick <user_id> - убрать из группы пользователя\n" \
                            "/task <task_id> - вывод задачи\n" \
                            "/answer <answer> - ответ к задаче, отвечать могут только капитаны\n" \
@@ -657,7 +655,7 @@ async def print_game_state(message: types.Message):
 @dp.callback_query_handler(text="agree")
 async def agree_req(query: types.CallbackQuery):
     u_id = query.message.chat.id
-    if GAME_STATE == "non started":
+    if GAME_STATE == "not started":
         try:
             msg_text = query.message.text.split("\n")
             id_line = msg_text[0]
@@ -696,7 +694,7 @@ async def agree_req(query: types.CallbackQuery):
 async def disagree_req(query: types.CallbackQuery):
     u_id = query.message.chat.id
 
-    if GAME_STATE == "non started":
+    if GAME_STATE == "not started":
         try:
             group_id = get_group_id(u_id)
             msg_text = query.message.text.split("\n")
