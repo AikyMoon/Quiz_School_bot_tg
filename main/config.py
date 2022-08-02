@@ -34,11 +34,19 @@ COMMANDS = {
 }
 
 STICKERS = {
-    "start": [r"CAACAgIAAxkBAAEFbbli5otYY4_49yq0Q1dvcjNrsroJRwACBQADwDZPE_lqX5qCa011KQQ",
-              r"CAACAgIAAxkBAAEFbcNi5oukzgJCzQGPK0OKi3BE9K9HZwAC_wIAAm2wQgMEoDmrNAI2NykE",
-              r"CAACAgIAAxkBAAEFbcVi5ouq2MToSUsDB-IZXWqYOs9GywAC9wEAAhZCawo59nBvtGN_xCkE",
-              r"CAACAgIAAxkBAAEFbcdi5ouwy35lZNF1lS8K-BJ3Pxj0UAACAQEAAladvQoivp8OuMLmNCkE",
-              r"CAACAgIAAxkBAAEFbcli5ou7aJZWOxJ4jGOPzLT9JD2VOwACiwADSTTmGmRdcY9mb007KQQ"],
+    "start": [
+        r"CAACAgIAAxkBAAEFbbli5otYY4_49yq0Q1dvcjNrsroJRwACBQADwDZPE_lqX5qCa011KQQ",
+        r"CAACAgIAAxkBAAEFbcNi5oukzgJCzQGPK0OKi3BE9K9HZwAC_wIAAm2wQgMEoDmrNAI2NykE",
+        r"CAACAgIAAxkBAAEFbcVi5ouq2MToSUsDB-IZXWqYOs9GywAC9wEAAhZCawo59nBvtGN_xCkE",
+        r"CAACAgIAAxkBAAEFbcdi5ouwy35lZNF1lS8K-BJ3Pxj0UAACAQEAAladvQoivp8OuMLmNCkE",
+        r"CAACAgIAAxkBAAEFbcli5ou7aJZWOxJ4jGOPzLT9JD2VOwACiwADSTTmGmRdcY9mb007KQQ"
+              ],
+
+    "error": [
+        r"CAACAgIAAxkBAAEFcjRi6ZfuNe5pXWZVL1B4eYP-y_RoBQACGwADa-18CrkXEinIu91YKQQ",
+        r"CAACAgIAAxkBAAEFcjZi6Zf6ey8jdy5gE43Tg8PI8a-riAACFgADa-18CgcoBnIvq3DlKQQ",
+        r"CAACAgIAAxkBAAEFcjhi6Zf9qi_sJjrTa6-hNF4JJw1x4gACRAADa-18Cs96SavCm2JLKQQ"
+    ]
 }
 
 COOLDOWN_MIN = 3
