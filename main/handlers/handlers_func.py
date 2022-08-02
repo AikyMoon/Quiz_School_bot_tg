@@ -338,36 +338,51 @@ async def kick_user(message: types.Message):
                     await bot.send_message(u_id, "Напишите /kick и через пробел id участнкиа")
                 else:
                     _, target_u_id = message.text.split()
-                    if check_group(target_u_id):
-                        group_id = get_group_id(u_id)
-                        if check_in_your_group(group_id, target_u_id):
-                            if check_id(target_u_id):
-                                group_id = get_group_id(u_id)
+                    if check_role(target_u_id):
+                        if check_group(target_u_id):
+                            group_id = get_group_id(u_id)
+                            if check_in_your_group(group_id, target_u_id):
+                                if check_id(target_u_id):
+                                    group_id = get_group_id(u_id)
 
-                                cur.execute(f"select group_users_id from groups where group_id = {group_id}")
-                                data = list(cur.fetchone()[0])
-                                data.remove(int(target_u_id))
+                                    cur.execute(f"select group_users_id from groups where group_id = {group_id}")
+                                    data = list(cur.fetchone()[0])
+                                    data.remove(int(target_u_id))
 
-                                cur.execute(
-                                    f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
-                                con.commit()
+                                    cur.execute(
+                                        f"update groups set group_users_id = ARRAY{data}::integer[] where group_id = {group_id}")
+                                    con.commit()
 
-                                cur.execute(f"update users set group_id = null where id = {target_u_id}")
-                                con.commit()
+                                    cur.execute(f"update users set group_id = null where id = {target_u_id}")
+                                    con.commit()
 
-                                name = get_uname(target_u_id)
+                                    name = get_uname(target_u_id)
 
-                                await bot.send_message(u_id, f"{name} был выгнан из группы")
+                                    await bot.send_message(u_id, f"{name} был выгнан из группы")
 
-                                change_role_true(target_u_id)
+                                    change_role_true(target_u_id)
 
-                                await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
+                                    await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
+                                else:
+                                    await bot.send_message(u_id, "Убедитесь в правильности написания id участника")
                             else:
-                                await bot.send_message(u_id, "Убедитесь в правильности написания id участника")
+                                await bot.send_message(u_id, "Участник не в вашей группе")
                         else:
-                            await bot.send_message(u_id, "Участник не в вашей группе")
+                            await bot.send_message(u_id, "Участника нет в группе")
                     else:
-                        await bot.send_message(u_id, "Участника нет в группе")
+                        group_id = get_group_id(target_u_id)
+
+                        for user in disagree_requests(group_id):
+                            set_wait_false(user)
+                        await bot.send_message(user, "Заявка отклонена, т.к. группа была удалена")
+
+                        for cur_user in send_warnings(group_id):
+                            unbind_group(cur_user, group_id)
+                            await bot.send_message(cur_user, "Группа была удалена")
+
+                        delete_group(group_id)
+
+                        await bot.send_message(u_id, "Группа была успешно удалена")
         except:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
