@@ -351,6 +351,9 @@ async def kick_user(message: types.Message):
                                 name = get_uname(target_u_id)
 
                                 await bot.send_message(u_id, f"{name} был выгнан из группы")
+
+                                change_role_true(target_u_id)
+
                                 await bot.send_message(target_u_id, f"Вы были выгнаны из группы")
                             else:
                                 await bot.send_message(u_id, "Убедитесь в правильности написания id участника")

@@ -96,3 +96,9 @@ def get_ids() -> list[int]:
         users.append(row[0])
 
     return users
+
+
+# ------------------ смена роли с игрока на капитана    ------------------
+def change_role_true(user_id: int):
+    cur.execute(f"UPDATE users SET is_player = false WHERE id = {user_id}")
+    con.commit()
