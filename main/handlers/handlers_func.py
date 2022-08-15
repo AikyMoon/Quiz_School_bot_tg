@@ -6,7 +6,6 @@ from main.config import *
 from main.admins import *
 from aiogram import types
 from random import choice
-from datetime import *
 from main.keyboards import *
 
 GAME_STATE = "not started"
@@ -760,6 +759,7 @@ async def disagree_req(query: types.CallbackQuery):
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
     await query.message.delete()
+
 
 # ------------------ все кроме команд        ------------------
 @dp.message_handler(content_types=[types.Sticker, types.StickerSet, types.Message, types.MediaGroup])
