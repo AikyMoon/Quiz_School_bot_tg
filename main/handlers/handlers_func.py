@@ -587,11 +587,19 @@ async def user_profile(message: types.Message):
             group_id_text = "отсутствует" if group_id is None else group_id
             wait = "ожидание" if check_wait(u_id) else "нет запросов на вступление"
 
-            text = "*** Ваш профиль *** \n" \
-                   f"id: {u_id}\n" \
-                   f"Имя: {name}\n" \
-                   f"Группа: {get_group_name(group_id_text)}\n" \
-                   f"Запросы на вступление: {wait}"
+            if isinstance(group_id_text, int):
+
+                text = "*** Ваш профиль *** \n" \
+                       f"id: {u_id}\n" \
+                       f"Имя: {name}\n" \
+                       f"Группа: {get_group_name(group_id_text)}\n" \
+                       f"Запросы на вступление: {wait}"
+            else:
+                text = "*** Ваш профиль *** \n" \
+                       f"id: {u_id}\n" \
+                       f"Имя: {name}\n" \
+                       f"Группа: {group_id_text}\n" \
+                       f"Запросы на вступление: {wait}"
 
             await bot.send_message(u_id, text)
 
