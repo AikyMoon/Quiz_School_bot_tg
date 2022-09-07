@@ -17,7 +17,7 @@ def task_bind(task_id: int, user_id: int):
 def check_answer(task_id: int, answer: str) -> bool:
     cur.execute(f"select answer from questions where task_id = {task_id}")
     correct = cur.fetchone()[0]
-    return correct in answer
+    return answer in correct
 
 
 # ------------------ получение количеста очков          ------------------
