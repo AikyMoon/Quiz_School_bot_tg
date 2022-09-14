@@ -294,7 +294,7 @@ async def agree_request(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
-            await raise(e)
+            raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
