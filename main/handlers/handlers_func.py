@@ -1,3 +1,5 @@
+import psycopg2
+
 from main.create_bot import *
 from main.users import *
 from main.groups import *
@@ -39,6 +41,7 @@ async def starting(message: types.Message):
     except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -69,6 +72,7 @@ async def register(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -115,6 +119,7 @@ async def print_help(message: types.Message):
     except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -130,6 +135,7 @@ async def admin_contact(message: types.Message):
         await bot.send_message(message.chat.id,
                                "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(message.chat.id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -157,6 +163,7 @@ async def group_create(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -180,6 +187,7 @@ async def print_settings(message: types.Message):
     except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -200,6 +208,7 @@ async def print_users(message: types.Message):
     except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -243,6 +252,7 @@ async def entry(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -294,6 +304,7 @@ async def agree_request(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -336,6 +347,7 @@ async def disagree_request(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -402,7 +414,9 @@ async def kick_user(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
+
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -467,6 +481,7 @@ async def print_task(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Команду можно использовать только во время игры")
@@ -507,6 +522,7 @@ async def send_answer(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Команду можно использовать только во время игры")
@@ -528,6 +544,7 @@ async def task_exit(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Команду можно использовать только во время игры")
@@ -579,6 +596,7 @@ async def group_statistics(message: types.Message):
     except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -615,6 +633,7 @@ async def user_profile(message: types.Message):
     except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        await cur.execute("rollback")
         raise(e)
 
 
@@ -652,6 +671,7 @@ async def leave_group(message: types.Message):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -753,6 +773,7 @@ async def agree_req(query: types.CallbackQuery):
         except Exception as e:
             await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            await cur.execute("rollback")
             raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
@@ -788,8 +809,9 @@ async def disagree_req(query: types.CallbackQuery):
             else:
                 await bot.send_message(u_id, "от данного участника нет запросов")
         except Exception as e:
-            raise(e)
+            await cur.execute("rollback")
             await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
+            raise(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
