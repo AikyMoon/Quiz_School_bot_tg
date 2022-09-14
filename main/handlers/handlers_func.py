@@ -65,10 +65,10 @@ async def register(message: types.Message):
             else:
 
                 await bot.send_message(u_id, f"Вы уже зарегестрированны по именем {get_uname(u_id)}")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
-            await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -111,9 +111,10 @@ async def print_help(message: types.Message):
                    "/admin - выводит контакт для связи с админом"
 
         await bot.send_message(u_id, text)
-    except:
+    except Exception as e:
         await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
         await bot.send_sticker(u_id, choice(STICKERS["error"]))
+        print(e)
 
 
 # ------------------ связь с админом                  ------------------
@@ -150,10 +151,10 @@ async def group_create(message: types.Message):
                     await bot.send_message(u_id, f"Группа {group_name} успешно создана")
             else:
                 await bot.send_message(u_id, "Команду могут использовать только игроки")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -234,10 +235,10 @@ async def entry(message: types.Message):
                             await bot.send_message(u_id, "Убедитесь в правильности написания id группы")
             else:
                 await bot.send_message(u_id, "Команду могут использовать только игроки")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -285,10 +286,10 @@ async def agree_request(message: types.Message):
                                 await bot.send_message(u_id, "От данного участника нет запросов на вступление")
                         else:
                             await bot.send_message(u_id, "Убедитесь в правильности написания id участнкиа")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -327,10 +328,10 @@ async def disagree_request(message: types.Message):
                             await bot.send_message(u_id, "от данного участника нет запросов")
                     else:
                         await bot.send_message(u_id, "Данный участник находится в группе")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -393,10 +394,10 @@ async def kick_user(message: types.Message):
                         delete_group(group_id)
 
                         await bot.send_message(u_id, "Группа была успешно удалена")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -458,10 +459,10 @@ async def print_task(message: types.Message):
                     await bot.send_message(u_id, "Подождите немного, чтобы решать дальше")
             else:
                 await bot.send_message(u_id, "Команду могут использовать игроки или капитаны команд")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Команду можно использовать только во время игры")
 
@@ -498,10 +499,10 @@ async def send_answer(message: types.Message):
                             await bot.send_message(u_id, "Неправильный ответ")
             else:
                 await bot.send_message(u_id, "Команду могут использовать только капитаны")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Команду можно использовать только во время игры")
 
@@ -519,10 +520,10 @@ async def task_exit(message: types.Message):
                 await bot.send_message(u_id, "Теперь вы можете решать другие задачи")
             else:
                 await bot.send_message(u_id, "Команду могут использовать только капитаны")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Команду можно использовать только во время игры")
 
@@ -641,10 +642,10 @@ async def leave_group(message: types.Message):
                     await bot.send_message(u_id, "Группа была успешно удалена")
             else:
                 await bot.send_message(u_id, "Команду могут использовать участники или капитаны групп")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
@@ -742,10 +743,10 @@ async def agree_req(query: types.CallbackQuery):
                     await bot.send_message(u_id, f"Данный участник находится в группе")
             else:
                 await bot.send_message(u_id, "От данного участника нет запросов на вступление")
-        except:
-            await bot.send_message(u_id,
-                                   "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
+        except Exception as e:
+            await bot.send_message(u_id, "Произошла непридвиденная ошибка, свяжитесь с админами, написав команду /admin")
             await bot.send_sticker(u_id, choice(STICKERS["error"]))
+            print(e)
     else:
         await bot.send_message(u_id, "Пока игра начата или закончена, нельзя использовать команду")
 
