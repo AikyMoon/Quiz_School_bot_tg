@@ -2,6 +2,6 @@
 quiz_bot.iml
 tasks_auto
 main/debug_bot.py
+main/config.py
 admins
 .ipynb_checkpoints
-main\config.py
