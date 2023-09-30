@@ -4,4 +4,4 @@ tasks_auto
 main/debug_bot.py
 admins
 .ipynb_checkpoints
-main/config.py
+main\config.py
